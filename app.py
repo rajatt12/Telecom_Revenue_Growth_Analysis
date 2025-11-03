@@ -9,7 +9,7 @@ from sklearn.cluster import KMeans
 # Page setup
 # ----------------------------
 st.set_page_config(page_title="Telecom Cluster Prediction", layout="centered")
-st.title("📊 Telecom Customer Segmentation (K-Means = 5)")
+st.title("📊 Telecom Customer Segmentation")
 st.markdown("Use this app to identify which customer cluster a user belongs to based on telecom usage and spend patterns.")
 
 # ----------------------------
@@ -90,4 +90,5 @@ st.write("---")
 st.subheader("Cluster Centers (Approximate Values)")
 centers = pd.DataFrame(scaler.inverse_transform(kmeans.cluster_centers_), columns=features)
 st.dataframe(centers.round(2))
+
 
