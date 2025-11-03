@@ -65,22 +65,22 @@ kmeans.fit(X_scaled)
 # ----------------------------
 # 4️⃣ Prediction with button
 # ----------------------------
-if st.button("🔍 Predict Cluster"):
+if st.button("Predict Cluster"):
     input_scaled = scaler.transform(input_data[features])
     cluster_pred = int(kmeans.predict(input_scaled)[0])
 
     # Mapping cluster → name & description
     cluster_map = {
-        0: ("💎 High-Value Customers", "High spend, high data, loyal users"),
-        1: ("📉 Low-Usage Customers", "Low usage and spending"),
-        2: ("🌐 Data-Hungry Users", "High data, moderate spend"),
-        3: ("📞 Voice-Focused Customers", "High voice mins, low data usage"),
-        4: ("🧩 New/Irregular Users", "Inconsistent usage or new customers")
+        0: ("High-Value Customers", "High spend, high data, loyal users"),
+        1: ("Low-Usage Customers", "Low usage and spending"),
+        2: ("Data-Hungry Users", "High data, moderate spend"),
+        3: ("Voice-Focused Customers", "High voice mins, low data usage"),
+        4: ("New/Irregular Users", "Inconsistent usage or new customers")
     }
 
     cluster_name, cluster_desc = cluster_map.get(cluster_pred, ("Unknown", "No description available"))
 
-    st.success(f"🎯 Predicted Cluster: **Cluster {cluster_pred} - {cluster_name}**")
+    st.success(f"Predicted Cluster: **Cluster {cluster_pred} - {cluster_name}**")
     st.info(cluster_desc)
 
 # ----------------------------
@@ -90,3 +90,4 @@ st.write("---")
 st.subheader("Cluster Centers (Approximate Values)")
 centers = pd.DataFrame(scaler.inverse_transform(kmeans.cluster_centers_), columns=features)
 st.dataframe(centers.round(2))
+
