@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -8,88 +7,97 @@ from sklearn.cluster import KMeans
 # ----------------------------
 # Page setup
 # ----------------------------
-st.set_page_config(page_title="Telecom Cluster Prediction", layout="centered")
-st.title("📊 Telecom Customer Segmentation")
-st.markdown("Use this app to identify which customer cluster a user belongs to based on telecom usage and spend patterns.")
+st.set_page_config(page_title="Telecom Customer Segmentation", layout="wide")
+st.title("📊 Multi-Customer Cluster Prediction (K-Means = 5)")
+st.markdown("Upload multiple customer records to predict their segments and see cluster-wise recommendations.")
 
 # ----------------------------
-# 1️⃣ User Inputs
+# 1️⃣ Upload or sample data
 # ----------------------------
-st.subheader("Enter Customer Details")
+uploaded_file = st.file_uploader("📤 Upload a CSV file with customer data", type=["csv"])
 
-MonthlyDataGB = st.number_input("Monthly Data Usage (GB)", min_value=0.0,value=25.0,step=0.5)
-MonthlyVoiceMins = st.number_input("Monthly Voice Minutes", min_value=0.0, value=800.0,step=10.0)
-MonthlySpendRs = st.number_input("Monthly Spend (₹)", min_value=0.0,value=400.0,step=10.0)
-DataGB_Last3Mo_Avg = st.number_input("Data GB (Last 3 Months Avg)", min_value=0.0,value=28.0, step=0.5)
-SpendRs_Last3Mo_Avg = st.number_input("Spend ₹ (Last 3 Months Avg)", min_value=0.0,value=380.0, step=10.0)
-
-# Derived feature
-DataGB_SpendRs_Ratio = 0.0 if MonthlySpendRs == 0 else MonthlyDataGB / MonthlySpendRs
-
-# Collect user input
-input_data = pd.DataFrame([{
-    "MonthlyDataGB": MonthlyDataGB,
-    "MonthlyVoiceMins": MonthlyVoiceMins,
-    "MonthlySpendRs": MonthlySpendRs,
-    "DataGB_Last3Mo_Avg": DataGB_Last3Mo_Avg,
-    "SpendRs_Last3Mo_Avg": SpendRs_Last3Mo_Avg,
-    "DataGB_SpendRs_Ratio": DataGB_SpendRs_Ratio
-}])
+if uploaded_file:
+    df_input = pd.read_csv(uploaded_file)
+    st.write("### Uploaded Data")
+    st.dataframe(df_input.head())
+else:
+    st.info("No file uploaded. Using sample synthetic data for demo.")
+    np.random.seed(42)
+    df_input = pd.DataFrame({
+        "MonthlyDataGB": np.random.gamma(2.0, 10.0, 50),
+        "MonthlyVoiceMins": np.random.normal(600, 300, 50).clip(50, 3000),
+        "MonthlySpendRs": (np.random.gamma(2.0, 200.0, 50) + 150).clip(50, 3000),
+        "DataGB_Last3Mo_Avg": np.random.gamma(2.0, 9.0, 50),
+        "SpendRs_Last3Mo_Avg": (np.random.gamma(2.0, 180.0, 50) + 120).clip(50, 3000)
+    })
+    df_input["DataGB_SpendRs_Ratio"] = df_input["MonthlyDataGB"] / df_input["MonthlySpendRs"]
 
 # ----------------------------
-# 2️⃣ Dummy training dataset (simulated data similar to notebook)
+# 2️⃣ Train Model (simulate your notebook)
 # ----------------------------
 np.random.seed(42)
-df = pd.DataFrame({
+df_train = pd.DataFrame({
     "MonthlyDataGB": np.random.gamma(2.0, 10.0, 500) + np.random.uniform(0,5,500),
     "MonthlyVoiceMins": np.random.normal(600, 300, 500).clip(50, 3000),
     "MonthlySpendRs": (np.random.gamma(2.0, 200.0, 500) + 150).clip(50, 3000),
-    "DataGB_Last3Mo_Avg": np.random.gamma(2.0, 9.0, 500) + np.random.uniform(0,3,500),
+    "DataGB_Last3Mo_Avg": np.random.gamma(2.0, 9.0, 500),
     "SpendRs_Last3Mo_Avg": (np.random.gamma(2.0, 180.0, 500) + 120).clip(50, 3000)
 })
-df["DataGB_SpendRs_Ratio"] = df["MonthlyDataGB"] / df["MonthlySpendRs"]
+df_train["DataGB_SpendRs_Ratio"] = df_train["MonthlyDataGB"] / df_train["MonthlySpendRs"]
 
 features = [
     "MonthlyDataGB", "MonthlyVoiceMins", "MonthlySpendRs",
     "DataGB_Last3Mo_Avg", "SpendRs_Last3Mo_Avg", "DataGB_SpendRs_Ratio"
 ]
 
-# ----------------------------
-# 3️⃣ Preprocess & Train Model (K=5)
-# ----------------------------
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(df[features])
+X_scaled = scaler.fit_transform(df_train[features])
 kmeans = KMeans(n_clusters=5, random_state=42, n_init=10)
 kmeans.fit(X_scaled)
 
 # ----------------------------
-# 4️⃣ Prediction with button
+# 3️⃣ Predict for uploaded dataset
 # ----------------------------
-if st.button("Predict Cluster"):
-    input_scaled = scaler.transform(input_data[features])
-    cluster_pred = int(kmeans.predict(input_scaled)[0])
+if st.button("🔍 Predict Clusters for All Customers"):
+    X_input_scaled = scaler.transform(df_input[features])
+    df_input["Cluster"] = kmeans.predict(X_input_scaled)
 
-    # Mapping cluster → name & description
+    # Cluster labels
     cluster_map = {
-        0: ("High-Value Customers", "High spend, high data, loyal users"),
-        1: ("Low-Usage Customers", "Low usage and spending"),
-        2: ("Data-Hungry Users", "High data, moderate spend"),
-        3: ("Voice-Focused Customers", "High voice mins, low data usage"),
-        4: ("New/Irregular Users", "Inconsistent usage or new customers")
+        0: ("💎 High-Value Customers", "Upsell premium plans and offer loyalty benefits."),
+        1: ("📉 Low-Usage Customers", "Send reactivation or low-cost bundle offers."),
+        2: ("🌐 Data-Hungry Users", "Promote unlimited data or high-speed add-ons."),
+        3: ("📞 Voice-Focused Customers", "Recommend unlimited voice or hybrid plans."),
+        4: ("🧩 Irregular Users", "Onboard or educate users to increase engagement.")
     }
 
-    cluster_name, cluster_desc = cluster_map.get(cluster_pred, ("Unknown", "No description available"))
+    df_input["Cluster_Name"] = df_input["Cluster"].map(lambda x: cluster_map[x][0])
+    df_input["Recommended_Action"] = df_input["Cluster"].map(lambda x: cluster_map[x][1])
 
-    st.success(f"Predicted Cluster: **Cluster {cluster_pred} - {cluster_name}**")
-    st.info(cluster_desc)
+    st.success("✅ Clusters Predicted Successfully!")
+    st.dataframe(df_input.head(10))
 
-# ----------------------------
-# 5️⃣ Optional: Show Cluster Centers
-# ----------------------------
-st.write("---")
-st.subheader("Cluster Centers (Approximate Values)")
-centers = pd.DataFrame(scaler.inverse_transform(kmeans.cluster_centers_), columns=features)
-st.dataframe(centers.round(2))
+    # ----------------------------
+    # 4️⃣ Group by Cluster and summarize
+    # ----------------------------
+    st.subheader("📊 Cluster Summary")
+    cluster_summary = (
+        df_input.groupby(["Cluster", "Cluster_Name"])
+        .agg({
+            "MonthlySpendRs": ["mean", "count"],
+            "MonthlyDataGB": "mean",
+            "MonthlyVoiceMins": "mean"
+        })
+        .reset_index()
+    )
+    cluster_summary.columns = ["Cluster", "Cluster_Name", "Avg Spend", "Count", "Avg Data GB", "Avg Voice Mins"]
+    st.dataframe(cluster_summary.round(2))
 
-
-
+    # ----------------------------
+    # 5️⃣ Recommendations
+    # ----------------------------
+    st.subheader("💡 Recommended Actions per Cluster")
+    for cluster_id, (name, action) in cluster_map.items():
+        count = (df_input["Cluster"] == cluster_id).sum()
+        st.markdown(f"**Cluster {cluster_id} – {name} ({count} customers)**")
+        st.info(action)
