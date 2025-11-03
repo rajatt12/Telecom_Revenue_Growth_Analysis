@@ -17,11 +17,11 @@ st.markdown("Use this app to identify which customer cluster a user belongs to b
 # ----------------------------
 st.subheader("Enter Customer Details")
 
-MonthlyDataGB = st.number_input("Monthly Data Usage (GB)", min_value=0.0, max_value=500.0, value=25.0, step=0.5)
-MonthlyVoiceMins = st.number_input("Monthly Voice Minutes", min_value=0.0, max_value=5000.0, value=800.0, step=10.0)
-MonthlySpendRs = st.number_input("Monthly Spend (₹)", min_value=0.0, max_value=10000.0, value=400.0, step=10.0)
-DataGB_Last3Mo_Avg = st.number_input("Data GB (Last 3 Months Avg)", min_value=0.0, max_value=500.0, value=28.0, step=0.5)
-SpendRs_Last3Mo_Avg = st.number_input("Spend ₹ (Last 3 Months Avg)", min_value=0.0, max_value=10000.0, value=380.0, step=10.0)
+MonthlyDataGB = st.number_input("Monthly Data Usage (GB)", min_value=0.0,value=25.0,step=0.5)
+MonthlyVoiceMins = st.number_input("Monthly Voice Minutes", min_value=0.0, value=800.0,step=10.0)
+MonthlySpendRs = st.number_input("Monthly Spend (₹)", min_value=0.0,value=400.0,step=10.0)
+DataGB_Last3Mo_Avg = st.number_input("Data GB (Last 3 Months Avg)", min_value=0.0,value=28.0, step=0.5)
+SpendRs_Last3Mo_Avg = st.number_input("Spend ₹ (Last 3 Months Avg)", min_value=0.0,value=380.0, step=10.0)
 
 # Derived feature
 DataGB_SpendRs_Ratio = 0.0 if MonthlySpendRs == 0 else MonthlyDataGB / MonthlySpendRs
@@ -90,5 +90,6 @@ st.write("---")
 st.subheader("Cluster Centers (Approximate Values)")
 centers = pd.DataFrame(scaler.inverse_transform(kmeans.cluster_centers_), columns=features)
 st.dataframe(centers.round(2))
+
 
 
