@@ -64,17 +64,17 @@ if st.button("🔍 Predict Clusters for All Customers"):
 
     # Cluster labels
     cluster_map = {
-        0: ("💎 High-Value Customers", "Upsell premium plans and offer loyalty benefits."),
-        1: ("📉 Low-Usage Customers", "Send reactivation or low-cost bundle offers."),
-        2: ("🌐 Data-Hungry Users", "Promote unlimited data or high-speed add-ons."),
-        3: ("📞 Voice-Focused Customers", "Recommend unlimited voice or hybrid plans."),
-        4: ("🧩 Irregular Users", "Onboard or educate users to increase engagement.")
+        0: (" High-Value Customers", "Upsell premium plans and offer loyalty benefits."),
+        1: (" Low-Usage Customers", "Send reactivation or low-cost bundle offers."),
+        2: (" Data-Hungry Users", "Promote unlimited data or high-speed add-ons."),
+        3: (" Voice-Focused Customers", "Recommend unlimited voice or hybrid plans."),
+        4: (" Irregular Users", "Onboard or educate users to increase engagement.")
     }
 
     df_input["Cluster_Name"] = df_input["Cluster"].map(lambda x: cluster_map[x][0])
     df_input["Recommended_Action"] = df_input["Cluster"].map(lambda x: cluster_map[x][1])
 
-    st.success("✅ Clusters Predicted Successfully!")
+    st.success("Clusters Predicted Successfully!")
     st.dataframe(df_input.head(10))
 
     # ----------------------------
@@ -96,8 +96,9 @@ if st.button("🔍 Predict Clusters for All Customers"):
     # ----------------------------
     # 5️⃣ Recommendations
     # ----------------------------
-    st.subheader("💡 Recommended Actions per Cluster")
+    st.subheader(" Recommended Actions per Cluster")
     for cluster_id, (name, action) in cluster_map.items():
         count = (df_input["Cluster"] == cluster_id).sum()
         st.markdown(f"**Cluster {cluster_id} – {name} ({count} customers)**")
         st.info(action)
+
