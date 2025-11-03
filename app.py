@@ -85,4 +85,5 @@ if uploaded_file:
     csv_download = df.to_csv(index=False).encode("utf-8")
     st.download_button("Download Clustered Data", csv_download, "clustered_customers.csv", "text/csv")
 else:
-    st.info("👆 Please upload a CSV file t
+    st.info("👆 Please upload a CSV file")
+
