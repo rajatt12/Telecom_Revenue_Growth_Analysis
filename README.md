@@ -1,3 +1,5 @@
+[View the deployed web app](https://telecomrevenuegrowthanalysis-4f5vwnsgw4df3wah9hnqqh.streamlit.app/)
+
 # 📊 Telecom Revenue Growth Analysis
 
 This project analyzes telecom customer data to uncover **revenue growth opportunities** using **customer segmentation and behavioral clustering**.  
