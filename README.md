@@ -1,3 +1,4 @@
+<img src="High_Risk_Customer.png" alt="My Image" width="…" height="…">
 [View the deployed web app](https://telecomrevenuegrowthanalysis-4f5vwnsgw4df3wah9hnqqh.streamlit.app/)
 
 # 📊 Telecom Revenue Growth Analysis
